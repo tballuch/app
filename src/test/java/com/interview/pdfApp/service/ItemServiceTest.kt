@@ -6,11 +6,14 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
+import java.io.File
+import java.io.FileInputStream
 import kotlin.test.assertNotNull
 
 class ItemServiceTest {
 
     private val itemRepository = mockk<ItemRepository>(relaxed = true)
+    private val fis = mockk<FileInputStream>(relaxed = true)
     private val cut = ItemService(itemRepository)
 
     private val itemList = listOf(
@@ -32,6 +35,15 @@ class ItemServiceTest {
         every { itemRepository.findAllById(ids) } .returns(itemList)
         val result = cut.generatePdfStream(ids)
         verify (exactly = 1) { itemRepository.findAllById(ids) }
+        assertNotNull(result)
+    }
+
+    @Test
+    fun test() {
+        File("pdf/").mkdir()
+        File("pdf/" + "test").createNewFile()
+
+        val result = cut.getFile("test")
         assertNotNull(result)
     }
 

@@ -6,7 +6,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
 import org.springframework.http.HttpStatus
-import java.io.ByteArrayOutputStream
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -20,19 +19,31 @@ class ControllerTest {
         val result = cut.generateItems()
         verify (exactly = 1) { itemService.generateItems() }
         assertNotNull(result)
-        assertEquals(result.statusCode, HttpStatus.OK)
+        assertEquals(result.statusCode, HttpStatus.CREATED)
+        assertNotNull(result.headers)
         assertEquals(result.body, "Items generated successfully")
     }
 
     @Test
-    fun testExportPdfs(){
+    fun testGeneratePdf(){
         val ids = setOf(1L, 2L, 8L)
-        every { itemService.generatePdfStream(ids) } .returns(ByteArrayOutputStream())
-        val result = cut.exportPdf(ids)
+        every { itemService.generatePdfStream(ids) } .returns("574935776589.pdf")
+        val result = cut.generatePdf(ids)
         verify (exactly = 1) { itemService.generatePdfStream(ids) }
         assertNotNull(result)
+        assertNotNull(result.headers)
         assertEquals(result.statusCode, HttpStatus.OK)
         assertNotNull(result.body)
+    }
+
+    @Test
+    fun testExportPdf(){
+        every { itemService.getFile("test") } .returns("TEST".toByteArray())
+        val result = cut.exportPdf("test")
+        verify (exactly = 1) { itemService.getFile("test") }
+        assertNotNull(result)
+        assertNotNull(result.headers)
+        assertEquals(result.statusCode, HttpStatus.OK)
     }
 
 }
