@@ -1,6 +1,7 @@
 package com.interview.pdfApp.controller;
 
 
+import com.interview.pdfApp.entity.Item;
 import com.interview.pdfApp.service.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
@@ -37,6 +39,18 @@ public class Controller {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>("Items generated successfully", headers, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Get first 5 items from the Database")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Items successfully retrieved",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)})})
+    @GetMapping("/items/getStart")
+    ResponseEntity<List<Item>> getFirstItems() {
+        List<Item> items = itemService.findTop5();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(items, headers, HttpStatus.OK);
     }
 
     @Operation(summary = "Generate a PDF")

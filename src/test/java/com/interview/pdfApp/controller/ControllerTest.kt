@@ -1,5 +1,6 @@
 package com.interview.pdfApp.controller
 
+import com.interview.pdfApp.entity.Item
 import com.interview.pdfApp.service.ItemService
 import io.mockk.every
 import io.mockk.mockk
@@ -44,6 +45,23 @@ class ControllerTest {
         assertNotNull(result)
         assertNotNull(result.headers)
         assertEquals(result.statusCode, HttpStatus.OK)
+    }
+
+    @Test
+    fun testGetFirstItems(){
+         val itemList = listOf(
+            Item("Item 1", 1),
+            Item("Item 2", 10),
+            Item("Item 3", 38)
+        )
+        every { itemService.findTop5() } .returns(itemList)
+        val result = cut.firstItems
+        verify (exactly = 1) { itemService.findTop5() }
+        assertNotNull(result)
+        assertNotNull(result.headers)
+        assertEquals(result.statusCode, HttpStatus.OK)
+        assertNotNull(result.body)
+        assertEquals(result.body, itemList)
     }
 
 }

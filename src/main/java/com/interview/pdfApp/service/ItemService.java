@@ -11,6 +11,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -26,7 +27,6 @@ public class ItemService {
 
     private static final Logger log = LoggerFactory.getLogger(ItemService.class);
     private final ItemRepository itemRepository;
-    private final Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
     private final Font boldFont = FontFactory.getFont(FontFactory.COURIER_BOLD, 12, BaseColor.BLACK);
     private final String fileDirPrefix = "pdf/";
 
@@ -36,6 +36,10 @@ public class ItemService {
             itemRepository.save(new Item("Item" + amount, amount));
         }
         log.info("Generation done");
+    }
+
+    public List<Item> findTop5(){
+        return itemRepository.findAll(Pageable.ofSize(5)).toList();
     }
 
     public  String generatePdfStream(Set<Long> ids){
